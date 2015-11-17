@@ -13,7 +13,7 @@ A JavaFX sprite-based "snake-like" game developed from scratch.
 * Also every five citizens rescued another citizen who is worth more points appears on stage.
 
 # Score and Stars
-* Star concept based on the score achieved on stage.
+* Star concept based on the score achieved on each stage.
 
 # Key Bindings
 * **Arrows:** Move the hero.
