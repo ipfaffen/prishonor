@@ -103,7 +103,7 @@ public final class R {
 		public final Image portal_sprite = newImage("portal_sprite_01.png");
 		public final Image portal = newImage("portal_01.png");
 
-		public final Image logo = newImage("logo_03.png");
+		public final Image logo = newImage("logo_01.png");
 		public final Image target = newImage("target_01.png");
 		public final Image target_bonus = newImage("target_bonus_01.png");
 		public final Image points = newImage("points_01.png");
