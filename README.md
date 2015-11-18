@@ -23,3 +23,6 @@ A JavaFX sprite-based "snake-like" game developed from scratch.
 * **Arrows:** Move the hero.
 * **Space:** Activate selected skill.
 * **Tab:** Select next skill.
+* **Enter:** Restart game.
+
+![](https://github.com/ipfaffen/prishonor/blob/master/help/key_bindings.png)
