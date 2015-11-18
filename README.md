@@ -1,6 +1,8 @@
 # Prishonor
 A JavaFX sprite-based "snake-like" game developed from scratch.
 
+If you just want to play it you can download the runnable jar from dist folder: https://github.com/ipfaffen/prishonor/raw/master/dist/prishonor.jar
+
 ![](https://github.com/ipfaffen/prishonor/blob/master/screenshot/screenshot_01.jpg)
 
 # Stages
