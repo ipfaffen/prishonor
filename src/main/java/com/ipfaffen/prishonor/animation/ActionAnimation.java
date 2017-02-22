@@ -195,10 +195,8 @@ public class ActionAnimation {
 				// If no duration was defined for target then set it with the duration of animation.
 				target.setDuration(duration);
 			}
-
 			timeline.getKeyFrames().add(new KeyFrame(target.getDuration(), ("keyFrame" + hashCode()), target.getOnFinished(), target.getKeyValues()));
 		}
-
 		timeline.play();
 	}
 
