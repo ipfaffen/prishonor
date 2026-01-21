@@ -1,0 +1,136 @@
+:root {
+  --bg-color: #1a1a1a;
+  --text-color: #b9b9b9;
+  --accent-color: #4a9eff;
+  --border-color: #333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.game-header {
+  text-align: center;
+}
+
+.game-header h1 {
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 10px;
+}
+
+.game-header p {
+  font-size: 1rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+#gameCanvas {
+  border: 3px solid var(--accent-color);
+  background-color: #000;
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.game-footer {
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.controls {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.controls p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.controls strong {
+  color: var(--accent-color);
+}
+
+.error-container {
+  text-align: center;
+  padding: 40px;
+  max-width: 500px;
+}
+
+.error-container h2 {
+  color: #ff4444;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.error-container p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.loading-container h2 {
+  color: var(--accent-color);
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--accent-color);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .game-header h1 {
+    font-size: 2rem;
+  }
+  
+  #gameCanvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .controls {
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "prishonor-ts",
+  "version": "1.0.0",
+  "description": "Prishonor game - TypeScript/HTML5 Canvas implementation",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.{ts,css}\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0",
+    "playwright": "^1.40.1"
+  },
+  "keywords": [
+    "game",
+    "typescript",
+    "canvas",
+    "html5"
+  ],
+  "author": "ipfaffen",
+  "license": "MIT"
+}
