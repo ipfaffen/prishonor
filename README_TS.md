@@ -12,6 +12,9 @@ The foundation has been established with:
 - ✅ Game loop with requestAnimationFrame
 - ✅ Keyboard input manager (arrow keys, space, enter)
 - ✅ Stage data loading (JSON scaffold)
+- ✅ Player profile storage (localStorage scaffold)
+- ✅ Stage navigation scaffold (Tab to cycle)
+- ✅ Stage preview renderer (visual placeholder)
 - ✅ Basic project structure
 - ✅ CSS styling and responsive layout
 
