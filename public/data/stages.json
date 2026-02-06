@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "background_image_name": "stage-01.png",
+    "stage_objects": [
+      {
+        "x": 120,
+        "y": 80,
+        "image_name": "rock-01.png"
+      }
+    ],
+    "bronze_medal_points": 1000,
+    "silver_medal_points": 2000,
+    "gold_medal_points": 3000
+  },
+  {
+    "id": 2,
+    "background_image_name": "stage-02.png",
+    "stage_objects": [
+      {
+        "x": 240,
+        "y": 160,
+        "image_name": "rock-02.png"
+      }
+    ],
+    "bronze_medal_points": 1500,
+    "silver_medal_points": 2500,
+    "gold_medal_points": 3500
+  }
+]
