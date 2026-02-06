@@ -1,67 +1,70 @@
 export class GameLoop {
-  private isRunning: boolean = false;
-  private isPaused: boolean = false;
-  private lastFrameTime: number = 0;
-  private fps: number = 60;
-  private frameInterval: number = 1000 / this.fps;
-  private animationFrameId: number | null = null;
+  #is_running: boolean = false;
+  #is_paused: boolean = false;
+  #last_frame_time: number = 0;
+  #fps: number = 60;
+  #frame_interval: number = 1000 / this.#fps;
+  #animation_frame_id: number | null = null;
+  #update_callback: (delta_time: number) => void;
+  #render_callback: () => void;
 
   constructor(
-    private updateCallback: (deltaTime: number) => void,
-    private renderCallback: () => void
-  ) {}
+    update_callback: (delta_time: number) => void,
+    render_callback: () => void
+  ) {
+    this.#update_callback = update_callback;
+    this.#render_callback = render_callback;
+  }
 
   start(): void {
-    if (this.isRunning) return;
+    if (this.#is_running) return;
     
-    this.isRunning = true;
-    this.lastFrameTime = performance.now();
-    this.loop(this.lastFrameTime);
+    this.#is_running = true;
+    this.#last_frame_time = performance.now();
+    this.#loop(this.#last_frame_time);
   }
 
   pause(): void {
-    this.isPaused = true;
+    this.#is_paused = true;
   }
 
   resume(): void {
-    if (this.isPaused) {
-      this.isPaused = false;
-      this.lastFrameTime = performance.now();
+    if (this.#is_paused) {
+      this.#is_paused = false;
+      this.#last_frame_time = performance.now();
     }
   }
 
   stop(): void {
-    this.isRunning = false;
-    if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+    this.#is_running = false;
+    if (this.#animation_frame_id === null) return;
+    
+    cancelAnimationFrame(this.#animation_frame_id);
+    this.#animation_frame_id = null;
   }
 
-  getIsRunning(): boolean {
-    return this.isRunning;
+  get_is_running(): boolean {
+    return this.#is_running;
   }
 
-  getIsPaused(): boolean {
-    return this.isPaused;
+  get_is_paused(): boolean {
+    return this.#is_paused;
   }
 
-  private loop(currentTime: number): void {
-    if (!this.isRunning) return;
+  #loop(current_time: number): void {
+    if (!this.#is_running) return;
 
-    const elapsed = currentTime - this.lastFrameTime;
+    const elapsed = current_time - this.#last_frame_time;
 
-    if (elapsed >= this.frameInterval) {
-      const deltaTime = elapsed / 1000;
+    if (elapsed >= this.#frame_interval) {
+      const delta_time = elapsed / 1000;
       
-      if (!this.isPaused) {
-        this.updateCallback(deltaTime);
-      }
+      if (!this.#is_paused) this.#update_callback(delta_time);
       
-      this.renderCallback();
-      this.lastFrameTime = currentTime - (elapsed % this.frameInterval);
+      this.#render_callback();
+      this.#last_frame_time = current_time - (elapsed % this.#frame_interval);
     }
 
-    this.animationFrameId = requestAnimationFrame((time) => this.loop(time));
+    this.#animation_frame_id = requestAnimationFrame(time => this.#loop(time));
   }
 }
