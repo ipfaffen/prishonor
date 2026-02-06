@@ -1,33 +1,19 @@
-import { Game } from './game/Game';
+import { Game as game } from './game/Game';
 import './style.css';
 
-async function main() {
-  try {
-    // Create HTML structure
-    createGameUI();
+async function main(): Promise<void> {
+  const app_container = get_app_container();
+  render_game_ui(app_container);
+  show_loading();
 
-    // Show loading state
-    showLoading();
-
-    // Initialize and start game
-    const game = Game.getInstance();
-    await game.initialize();
-
-    // Hide loading state
-    hideLoading();
-  } catch (error) {
-    console.error('Failed to start game:', error);
-    showError('Failed to load game. Please refresh the page.');
-  }
+  const game_instance = game.get_instance();
+  await game_instance.initialize();
+  hide_loading();
 }
 
-function createGameUI(): void {
-  const app = document.getElementById('app');
-  if (!app) {
-    throw new Error('App element not found');
-  }
+function render_game_ui(app_container: HTMLElement): void {
   
-  app.innerHTML = `
+  app_container.innerHTML = `
     <div class="game-container">
       <div class="game-header">
         <h1>Prishonor</h1>
@@ -52,39 +38,40 @@ function createGameUI(): void {
   `;
 }
 
-function showLoading(): void {
+function show_loading(): void {
   const loading = document.getElementById('loading');
-  if (loading) {
-    loading.style.display = 'block';
-  }
+  if (loading) loading.style.display = 'block';
 }
 
-function hideLoading(): void {
+function hide_loading(): void {
   const loading = document.getElementById('loading');
   const canvas = document.getElementById('gameCanvas');
   const footer = document.getElementById('gameFooter');
   
-  if (loading) {
-    loading.style.display = 'none';
-  }
-  
-  if (canvas) {
-    canvas.style.display = 'block';
-  }
-  
-  if (footer) {
-    footer.style.display = 'block';
-  }
+  if (loading) loading.style.display = 'none';
+  if (canvas) canvas.style.display = 'block';
+  if (footer) footer.style.display = 'block';
 }
 
-function showError(message: string): void {
-  const app = document.getElementById('app');
-  if (!app) return;
+function get_app_container(): HTMLElement {
+  const app_container = document.getElementById('app');
+  if (app_container) return app_container;
+
+  throw new Error('App element not found');
+}
+
+const boot = (): void => {
+  main().catch(() => show_boot_error());
+};
+
+function show_boot_error(): void {
+  const app_container = document.getElementById('app');
+  if (!app_container) return;
   
-  app.innerHTML = `
+  app_container.innerHTML = `
     <div class="error-container">
       <h2>Error</h2>
-      <p>${message}</p>
+      <p>Failed to load game. Please refresh the page.</p>
       <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
         Check the console for more details.
       </p>
@@ -92,9 +79,5 @@ function showError(message: string): void {
   `;
 }
 
-// Start the game when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', main);
-} else {
-  main();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();

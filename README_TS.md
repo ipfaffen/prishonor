@@ -10,8 +10,14 @@ The foundation has been established with:
 - ✅ Vite build system and dev server
 - ✅ Canvas-based rendering engine
 - ✅ Game loop with requestAnimationFrame
+- ✅ Keyboard input manager (arrow keys, space, enter)
+- ✅ Stage data loading (JSON scaffold)
 - ✅ Basic project structure
 - ✅ CSS styling and responsive layout
+
+This includes working TypeScript entry points and core infrastructure files such as
+`src/main.ts`, `src/game/Game.ts`, `src/game/GameLoop.ts`, `src/game/RenderEngine.ts`,
+and shared types in `src/types/GameTypes.ts`.
 
 ## Project Structure
 

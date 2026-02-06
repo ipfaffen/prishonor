@@ -36,5 +36,5 @@ export enum ModeEnum {
 
 export interface Renderable {
   render(ctx: CanvasRenderingContext2D): void;
-  update(deltaTime: number): void;
+  update(delta_time: number): void;
 }
