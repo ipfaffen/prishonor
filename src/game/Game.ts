@@ -8,6 +8,9 @@ import { StageRepository as stage_repository } from '@/storage/stage-repository'
 import { PlayerStorage as player_storage } from '@/storage/player-storage';
 import type { Stage as stage_type } from '@/types/stage-types';
 import type { PlayerProfile as player_profile } from '@/types/player-types';
+import { AssetLoader as asset_loader } from '@/assets/asset-loader';
+import { StageRepository as stage_repository } from '@/storage/stage-repository';
+import type { Stage as stage_type } from '@/types/stage-types';
 
 export class Game {
   static #instance: Game;
@@ -130,6 +133,9 @@ export class Game {
     const stage_label = this.#get_stage_label();
     if (stage_label) ctx.fillText(stage_label, 10, 48);
     if (!this.#last_input) return;
+    if (!this.#last_input) return;
+    ctx.fillStyle = '#8fd3ff';
+    ctx.textAlign = 'left';
     ctx.fillText(`Last input: ${this.#last_input}`, 10, 20);
   }
 
