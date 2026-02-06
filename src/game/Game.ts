@@ -3,14 +3,16 @@ import { GameLoop as game_loop } from './GameLoop';
 import { KeyboardManager as keyboard_manager } from './keyboard-manager';
 import { StageNavigator as stage_navigator } from './stage-navigator';
 import { StagePreviewRenderer as stage_preview_renderer } from './stage-preview-renderer';
+import { StageBackgroundRenderer as stage_background_renderer } from './stage-background-renderer';
+import { HudRenderer as hud_renderer } from './hud-renderer';
+import { PlayerProgress as player_progress } from './player-progress';
+import { HeroPreview as hero_preview } from './hero-preview';
 import { AssetLoader as asset_loader } from '@/assets/asset-loader';
 import { StageRepository as stage_repository } from '@/storage/stage-repository';
 import { PlayerStorage as player_storage } from '@/storage/player-storage';
 import type { Stage as stage_type } from '@/types/stage-types';
 import type { PlayerProfile as player_profile } from '@/types/player-types';
-import { AssetLoader as asset_loader } from '@/assets/asset-loader';
-import { StageRepository as stage_repository } from '@/storage/stage-repository';
-import type { Stage as stage_type } from '@/types/stage-types';
+import type { StageProgressSummary as stage_progress_summary } from '@/types/player-progress-types';
 
 export class Game {
   static #instance: Game;
@@ -18,12 +20,17 @@ export class Game {
   #game_loop: game_loop;
   #keyboard_manager: keyboard_manager;
   #stage_repository: stage_repository;
+  #asset_loader: asset_loader;
   #stages: Map<number, stage_type> = new Map();
   #stage_count: number = 0;
   #stage_navigator: stage_navigator | null = null;
+  #stage_background_renderer: stage_background_renderer;
   #stage_preview_renderer: stage_preview_renderer;
+  #hud_renderer: hud_renderer;
+  #hero_preview: hero_preview;
   #player_storage: player_storage;
   #player_profile: player_profile;
+  #player_progress: player_progress;
   #is_initialized: boolean = false;
   #animation_time: number = 0;
   #last_input: string | null = null;
@@ -31,13 +38,19 @@ export class Game {
   private constructor() {
     this.#render_engine = new render_engine('gameCanvas', 600, 430);
     this.#keyboard_manager = new keyboard_manager();
-    this.#stage_repository = new stage_repository(new asset_loader(), '/data/stages.json');
+    this.#asset_loader = new asset_loader();
+    this.#stage_repository = new stage_repository(this.#asset_loader, '/data/stages.json');
     this.#player_storage = new player_storage('prishonor_player');
     this.#player_profile = this.#player_storage.load();
-    this.#stage_preview_renderer = new stage_preview_renderer(32);
+    this.#player_progress = new player_progress(this.#player_profile);
+    this.#stage_background_renderer = new stage_background_renderer(this.#asset_loader);
+    this.#stage_preview_renderer = new stage_preview_renderer(this.#asset_loader, 32);
+    this.#hud_renderer = new hud_renderer();
+    this.#hero_preview = new hero_preview('/images/hero_sprite_01.png', {x:460,y:260}, {width:32,height:32});
+    this.#render_engine.add(this.#hero_preview);
     this.#game_loop = new game_loop(
-      delta_time => this.#update(delta_time),
-      () => this.#render()
+      delta_time=>this.#update(delta_time),
+      ()=>this.#render()
     );
     this.#setup_input_handlers();
   }
@@ -62,20 +75,20 @@ export class Game {
     const canvas = this.#render_engine.get_canvas();
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     ctx.fillStyle = '#4a9eff';
     ctx.font = 'bold 32px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Prishonor', canvas.width / 2, canvas.height / 2 - 40);
-    
+
     ctx.fillStyle = '#b9b9b9';
     ctx.font = '18px Arial';
     ctx.fillText('TypeScript Migration - Phase 1', canvas.width / 2, canvas.height / 2);
-    
+
     ctx.font = '14px Arial';
     ctx.fillText('Infrastructure Setup Complete', canvas.width / 2, canvas.height / 2 + 40);
-    
+
     ctx.font = '12px Arial';
     ctx.fillStyle = '#4a9eff';
     ctx.fillText('Game loop is running...', canvas.width / 2, canvas.height / 2 + 80);
@@ -85,7 +98,7 @@ export class Game {
     this.#render_engine.update(delta_time);
     this.#animate_welcome_screen(delta_time);
   }
-  
+
   #animate_welcome_screen(delta_time: number): void {
     this.#animation_time += delta_time;
   }
@@ -93,50 +106,44 @@ export class Game {
   #render(): void {
     const ctx = this.#render_engine.get_context();
     const canvas = this.#render_engine.get_canvas();
-    
+
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     this.#render_engine.render();
-    this.#stage_preview_renderer.render(ctx, this.#get_current_stage());
-    
+    const current_stage = this.#get_current_stage();
+    this.#stage_background_renderer.render(ctx, current_stage, canvas);
+    this.#stage_preview_renderer.render(ctx, current_stage);
+
     const pulse = Math.sin(this.#animation_time * 2) * 0.3 + 0.7;
-    
+
     ctx.fillStyle = '#4a9eff';
     ctx.font = 'bold 32px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Prishonor', canvas.width / 2, canvas.height / 2 - 40);
-    
+
     ctx.fillStyle = '#b9b9b9';
     ctx.font = '18px Arial';
     ctx.fillText('TypeScript Migration - Phase 1', canvas.width / 2, canvas.height / 2);
-    
+
     ctx.font = '14px Arial';
     ctx.fillText('Infrastructure Setup Complete', canvas.width / 2, canvas.height / 2 + 40);
-    
+
     ctx.globalAlpha = pulse;
     ctx.font = '12px Arial';
     ctx.fillStyle = '#4a9eff';
     ctx.fillText('● Game loop is running...', canvas.width / 2, canvas.height / 2 + 80);
     ctx.globalAlpha = 1;
-    
-    ctx.fillStyle = '#666';
-    ctx.font = '10px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(`FPS: 60`, canvas.width - 10, 20);
-    ctx.fillText(`Stages: ${this.#stage_count}`, canvas.width - 10, 34);
-    
-    ctx.fillStyle = '#8fd3ff';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Player stage: ${this.#get_current_stage_id()}`, 10, 34);
-    const stage_label = this.#get_stage_label();
-    if (stage_label) ctx.fillText(stage_label, 10, 48);
-    if (!this.#last_input) return;
-    if (!this.#last_input) return;
-    ctx.fillStyle = '#8fd3ff';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Last input: ${this.#last_input}`, 10, 20);
+
+    this.#hud_renderer.render(
+      ctx,
+      this.#get_current_stage(),
+      this.#stage_count,
+      this.#get_current_stage_id(),
+      this.#last_input,
+      this.#get_stage_progress()
+    );
   }
 
   pause(): void {
@@ -154,13 +161,13 @@ export class Game {
   }
 
   #setup_input_handlers(): void {
-    this.#keyboard_manager.register_handler('ArrowUp', key_code => this.#set_last_input(key_code));
-    this.#keyboard_manager.register_handler('ArrowDown', key_code => this.#set_last_input(key_code));
-    this.#keyboard_manager.register_handler('ArrowLeft', key_code => this.#set_last_input(key_code));
-    this.#keyboard_manager.register_handler('ArrowRight', key_code => this.#set_last_input(key_code));
-    this.#keyboard_manager.register_handler('Space', key_code => this.#set_last_input(key_code));
-    this.#keyboard_manager.register_handler('Enter', key_code => this.#set_last_input(key_code));
-    this.#keyboard_manager.register_handler('Tab', key_code => this.#advance_stage(key_code));
+    this.#keyboard_manager.register_handler('ArrowUp', key_code=>this.#set_last_input(key_code));
+    this.#keyboard_manager.register_handler('ArrowDown', key_code=>this.#set_last_input(key_code));
+    this.#keyboard_manager.register_handler('ArrowLeft', key_code=>this.#set_last_input(key_code));
+    this.#keyboard_manager.register_handler('ArrowRight', key_code=>this.#set_last_input(key_code));
+    this.#keyboard_manager.register_handler('Space', key_code=>this.#set_last_input(key_code));
+    this.#keyboard_manager.register_handler('Enter', key_code=>this.#set_last_input(key_code));
+    this.#keyboard_manager.register_handler('Tab', key_code=>this.#advance_stage(key_code));
   }
 
   #set_last_input(key_code: string): void {
@@ -183,6 +190,10 @@ export class Game {
     return this.#stage_navigator.get_current_stage();
   }
 
+  #get_stage_progress(): stage_progress_summary | null {
+    return this.#player_progress.get_stage_progress(this.#get_current_stage());
+  }
+
   #save_player_profile(): void {
     this.#player_profile.last_played_stage_id = this.#get_current_stage_id();
     this.#player_storage.save(this.#player_profile);
@@ -196,12 +207,4 @@ export class Game {
     this.#save_player_profile();
   }
 
-  #get_stage_label(): string | null {
-    if (!this.#stage_navigator) return null;
-
-    const stage = this.#stage_navigator.get_current_stage();
-    if (!stage) return null;
-
-    return `Stage ${stage.id}: ${stage.background_image_name}`;
-  }
 }

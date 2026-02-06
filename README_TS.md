@@ -55,6 +55,9 @@ prishonor/
 # Install dependencies
 npm install
 
+# Sync original Java assets (sprites + stage data)
+npm run sync:assets
+
 # Start development server
 npm run dev
 
