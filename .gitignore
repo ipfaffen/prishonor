@@ -85,3 +85,6 @@ coverage/
 # Temporary files
 *.tmp
 .cache/
+
+# Generated game assets (sync via scripts)
+public/images/
